@@ -55,17 +55,58 @@ classdef WGCNA < handle
             g = rmedge(g, EdgesToRemove);
         end
         
-        function h = plotGraph(g)
-            figure
+        function h = plotGraph(g,OptionZ)
+            % initialize optional argument defaults
+            if nargin<2;   OptionZ=struct([]); 
+            end
+            
+            if isfield(OptionZ,'LineWidth')
+            daObj.LineWidth=OptionZ.LineWidth;
+            else
+            daObj.LineWidth=1;
+            end
+            
+            if isfield(OptionZ,'EdgeAlpha')
+            daObj.EdgeAlpha=OptionZ.EdgeAlpha;
+            else
+            daObj.EdgeAlpha=.7;
+            end
+            
+            if isfield(OptionZ,'NodeFontSize')
+            daObj.NodeFontSize=OptionZ.NodeFontSize;
+            else
+            daObj.NodeFontSize=8;
+            end
+            
+            if isfield(OptionZ,'SigNode')
+            daObj.SigNode=OptionZ.SigNode;
+            else
+            daObj.SigNode=0;
+            end
+            
+            if isfield(OptionZ,'Layout')
+            daObj.Layout=OptionZ.Layout;
+            else
+            daObj.Layout='force3';
+            end
+            
+            figure('Position',[0 0 1920 1080])
             h = plot(g,'EdgeCData',g.Edges.Weight, 'NodeLabelMode', 'auto');
-%             h.MarkerSize = rescale(-g.Nodes.Wald_Stats,2,2)
-            h.LineWidth = 1
-            h.EdgeAlpha = .7;
-            h.NodeFontSize = 8
-            % h.NodeColor ='w';
-%             h.NodeCData = g.Nodes.Wald_Stats;
-            layout(h,'force3','WeightEffect','direct','UseGravity','on');
-
+            if daObj.SigNode==1;
+                h.MarkerSize = rescale(-g.Nodes.Wald_Stats,2,2)
+                h.NodeCData = g.Nodes.Wald_Stats;
+            else
+                h.MarkerSize = 5;
+            end
+            h.LineWidth = daObj.LineWidth;
+            h.EdgeAlpha = daObj.EdgeAlpha;
+            h.NodeFontSize = daObj.NodeFontSize;
+            h.NodeColor ='w';
+            if sum(daObj.Layout=='circle')==6;
+            layout(h,'circle');
+            else
+            layout(h,daObj.Layout,'WeightEffect','direct','UseGravity','on');
+            end
             set(gcf,'Colormap',flipud(plasma),'Color','k');
             h.NodeLabelColor = 'w';
             h.NodeFontWeight = 'bold'
