@@ -23,10 +23,7 @@ g.set_names('column',[],'x',[],'y', p.Results.title);
 g.set_text_options('base_size',14,'interpreter','none');
 
 %% Make the colors look cool
-moduleColor = matlab.lang.makeUniqueStrings(cellstr(unique(o.deseqTable.moduleColor)));
-moduleColor = cellfun(@(x) strsplit(x,'_'), moduleColor, 'UniformOutput', 0);
-moduleColor = cellfun(@(x) x(1), moduleColor);
-moduleColor = sort(moduleColor);
+moduleColor = cellstr(unique(o.deseqTable.moduleColor));
 [~, rgb] = colornames(o.colorMap,moduleColor);
 
 
