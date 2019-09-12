@@ -1,7 +1,10 @@
 function plotEigenGenes(o)
 % Plot the eigengenes for each sample.
-
-[~, rgb] = colornames('R',categories(o.eigenGenes.moduleColor));
+moduleColor = matlab.lang.makeUniqueStrings(cellstr(unique(o.deseqTable.moduleColor)));
+moduleColor = cellfun(@(x) strsplit(x,'_'), moduleColor, 'UniformOutput', 0);
+moduleColor = cellfun(@(x) x(1), moduleColor);
+moduleColor = sort(moduleColor);
+[~, rgb] = colornames(o.colorMap,moduleColor);
 
 figure
 g = gramm('x',o.eigenGenes.Sample, 'y',o.eigenGenes.eigenGene, 'color',o.eigenGenes.moduleColor);
