@@ -1,7 +1,13 @@
 function plotEigenGenes(o)
 % Plot the eigengenes for each sample.
 
-[~, rgb] = colornames(o.colorMap,categories(o.eigenGenes.moduleColor));
+%% Make the colors look cool
+moduleColor = cellstr(unique(o.eigenGenes.moduleColor));
+moduleColor = sort(moduleColor);
+[~, rgb] = colornames(o.colorMap,moduleColor);
+
+
+% [~, rgb] = colornames(o.colorMap,unique(o.eigenGenes.moduleColor,'sorted'));
 
 figure
 g = gramm('x',o.eigenGenes.Sample, 'y',o.eigenGenes.eigenGene, 'color',o.eigenGenes.moduleColor);

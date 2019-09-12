@@ -24,6 +24,7 @@ g.set_text_options('base_size',14,'interpreter','none');
 
 %% Make the colors look cool
 moduleColor = cellstr(unique(o.deseqTable.moduleColor));
+moduleColor = sort(moduleColor);
 [~, rgb] = colornames(o.colorMap,moduleColor);
 
 

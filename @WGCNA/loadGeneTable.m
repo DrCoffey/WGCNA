@@ -6,7 +6,10 @@ o.geneTable = readtable(fullfile(o.baseDir,geneTablePath));
 
 colorMaps = {'xkcd', 'wikipedia', 'Resene', 'Crayola'};
  
+%% Use a random seed based on the file name to make things repeatable
 s = RandStream('mt19937ar','seed',sum(uint32(fileparts(geneTablePath))));
+% Uncomment this line to make it random
+% s = RandStream('mt19937ar','seed',randi(1000));
 
 colorMap = datasample(s, colorMaps,1);
 
@@ -30,17 +33,7 @@ end
 
 function modules = renameColors(modules, colorMap, s)
 
-
 newColorNames = datasample(s, colornames(colorMap),length(unique(modules)),'Replace',false);
-
-% moduleNames = categories(modules);
-% 
-% [~, rgb] = colornames('R',moduleNames);
-% 
-% moduleNames = colornames(colorMap,rgb);
-
 modules = renamecats(modules, newColorNames);
-
-
 
 end
