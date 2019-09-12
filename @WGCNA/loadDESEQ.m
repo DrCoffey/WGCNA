@@ -5,8 +5,18 @@ function o = loadDESEQ(o,deseqPath)
 % dissTOM file is already loaded or the graph is created, loadDESEQ will
 % append that stats to the graph.
 
-[~, o.deseqFileName] = fileparts(deseqPath);
+[~, o.deseqFileName, fileType] = fileparts(deseqPath);
+
+switch fileType
+    case '.xlsx' 
 o.deseqTable = readtable(deseqPath, 'TreatAsEmpty', 'NA');
+    case '.tabular'
+        o.deseqTable = readtable(deseqPath, 'FileType','text','TreatAsEmpty', 'NA');
+end
+
+o.deseqTable.Properties.VariableNames = {'GeneID', 'Base_mean', 'log2_FC', 'StdErr', 'Wald_Stats', 'P_value', 'P_adj'};
+
+
 [o.deseqTable, ~, idx] = innerjoin(o.deseqTable,o.geneTable,'LeftKeys',1,'RightKeys','Probes');
 % Convert P-Values to Z scores for Normalizaiotn & Plotting
 o.deseqTable.z_score = -sqrt(2) * erfcinv(o.deseqTable.P_adj*2);

@@ -22,12 +22,16 @@ g.axe_property('YLim',[-8 8],'tickdir','out');
 g.set_names('column',[],'x',[],'y', p.Results.title);
 g.set_text_options('base_size',14,'interpreter','none');
 
-%% Make the colors look cool
-moduleColor = matlab.lang.makeUniqueStrings(cellstr(unique(o.deseqTable.moduleColor)));
+
+moduleColor = matlab.lang.makeUniqueStrings(categories(o.deseqTable.moduleColor));
 moduleColor = cellfun(@(x) strsplit(x,'_'), moduleColor, 'UniformOutput', 0);
 moduleColor = cellfun(@(x) x(1), moduleColor);
-moduleColor = sort(moduleColor);
-[~, rgb] = colornames(o.colorMap,moduleColor);
+
+[~, rgb] = colornames('R',categories(o.deseqTable.moduleColor));
+
+split(moduleColor,'_')
+
+colornames('xkcd',rgb);
 
 
 g.set_color_options('map',rgb);
@@ -36,11 +40,11 @@ g.geom_hline('yintercept',2.5,'style','r');
 g.geom_hline('yintercept',-2.5,'style','r');
 
 g.set_point_options('base_size',2);
-g.no_legend();
+g.no_legend
 figure('Position',[1 1 1750 500]);
 g.draw();
 xtickangle(g.facet_axes_handles,45)
-set(gcf,'Position',[1 1 1750 800]);
+% set(gcf,'Position',[1 1 750 350]);
 % if o.export
 %     g.export('export_path',figfold,'file_name',plotTitle,'file_type','png');
 % end

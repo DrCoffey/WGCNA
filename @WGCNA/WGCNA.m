@@ -9,6 +9,7 @@ classdef WGCNA < handle
         deseqTable
         deseqFileName % Name of the deseq2 file
         eigenGenes
+        colorMap
     end
     
     methods
@@ -87,11 +88,11 @@ classdef WGCNA < handle
             if isfield(OptionZ,'Layout')
             daObj.Layout=OptionZ.Layout;
             else
-            daObj.Layout='force3';
+            daObj.Layout='force';
             end
             
-            figure('Position',[0 0 1920 1080])
-            h = plot(g,'EdgeCData',g.Edges.Weight, 'NodeLabelMode', 'auto');
+            figure%('Position',[0 0 1920 1080])
+            h = plot(g,'EdgeCData',rescale(g.Edges.Weight,0,1), 'NodeLabelMode', 'auto');
             if daObj.SigNode==1;
                 h.MarkerSize = rescale(-g.Nodes.Wald_Stats,2,2)
                 h.NodeCData = g.Nodes.Wald_Stats;
@@ -102,17 +103,17 @@ classdef WGCNA < handle
             h.EdgeAlpha = daObj.EdgeAlpha;
             h.NodeFontSize = daObj.NodeFontSize;
             h.NodeColor ='w';
-            if sum(daObj.Layout=='circle')==6;
-            layout(h,'circle');
-            else
+%             if sum(daObj.Layout=='circle')==6;
+%             layout(h,'circle');
+%             else
             layout(h,daObj.Layout,'WeightEffect','direct','UseGravity','on');
-            end
+%             end
             set(gcf,'Colormap',flipud(plasma),'Color','k');
             h.NodeLabelColor = 'w';
             h.NodeFontWeight = 'bold'
             box off
             axis off
-            set(gca,'position',[0,0,1,1])
+%             set(gca,'position',[0,0,1,1])
         end
     end
 end

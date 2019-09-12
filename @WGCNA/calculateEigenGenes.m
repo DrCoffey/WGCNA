@@ -25,9 +25,12 @@ for module = modules'
             
         case 'unweighted'
             TPM = o.geneTable{o.geneTable.moduleColor == module, numericVars};
-            [~,score] = pca(log2(TPM'+1),'NumComponents',1);
+%                 TPM(TPM == -Inf) = NaN
+            [~,score] = pca(TPM','NumComponents',1);
     end
-    
+    if isempty(score)
+        score = zeros(length(sampleNames),1);
+    end
     o.eigenGenes = [o.eigenGenes;
         table(repmat(module,length(sampleNames),1),sampleNames,zscore(score),'VariableNames',{'moduleColor','Sample','eigenGene'})
         ];
