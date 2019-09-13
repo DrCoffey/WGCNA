@@ -9,7 +9,7 @@ moduleColor = sort(moduleColor);
 
 % [~, rgb] = colornames(o.colorMap,unique(o.eigenGenes.moduleColor,'sorted'));
 
-figure
+figure('Position',[1,1,1000,1000])
 g = gramm('x',o.eigenGenes.Sample, 'y',o.eigenGenes.eigenGene, 'color',o.eigenGenes.moduleColor);
 g.facet_wrap(o.eigenGenes.moduleColor,'ncols',4);
 g.geom_bar;

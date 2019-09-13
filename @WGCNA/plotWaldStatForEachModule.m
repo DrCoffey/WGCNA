@@ -14,7 +14,7 @@ p.parse(varargin{:})
 
 
 g = gramm('x',o.deseqTable.moduleColor,'y', o.deseqTable{:,p.Results.column}, 'color',o.deseqTable.moduleColor);
-% g.stat_violin('normalization','width','dodge',1,'fill','transparent','width',length(unique(o.deseqTable.moduleColor)));
+g.stat_violin('normalization','width','dodge',1,'fill','transparent','width',length(unique(o.deseqTable.moduleColor))/2);
 g.geom_jitter('width',.1,'dodge',1);
 g.stat_summary('geom',{'black_errorbar'},'type','sem','dodge',1);
 g.axe_property('LineWidth',1.5,'FontSize',12);
