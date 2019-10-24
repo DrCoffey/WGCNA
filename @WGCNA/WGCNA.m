@@ -51,7 +51,7 @@ classdef WGCNA < handle
         function g = pruneEdges(g, n)
             % Make it so that each node has an average of n connections
             numEdgesToRemove = g.numedges - (g.numnodes * n);
-            numEdgesToRemove = max(numEdgesToRemove,0)
+            numEdgesToRemove = round(max(numEdgesToRemove,0))
             [~, EdgesToRemove] = maxk(g.Edges.Weight, numEdgesToRemove);
             g = rmedge(g, EdgesToRemove);
         end
@@ -91,7 +91,7 @@ classdef WGCNA < handle
             daObj.Layout='force';
             end
             
-            figure%('Position',[0 0 1920 1080])
+            figure('Position',[0 0 1080 1080])
             h = plot(g,'EdgeCData',rescale(g.Edges.Weight,0,1), 'NodeLabelMode', 'auto');
             if daObj.SigNode==1;
                 h.MarkerSize = rescale(-g.Nodes.Wald_Stats,2,2)
@@ -103,11 +103,13 @@ classdef WGCNA < handle
             h.EdgeAlpha = daObj.EdgeAlpha;
             h.NodeFontSize = daObj.NodeFontSize;
             h.NodeColor ='w';
-%             if sum(daObj.Layout=='circle')==6;
-%             layout(h,'circle');
-%             else
+            try
+            if sum(daObj.Layout=='circle')==6;
+            layout(h,'circle');
+            end
+            catch
             layout(h,daObj.Layout,'WeightEffect','direct','UseGravity','on');
-%             end
+            end
             set(gcf,'Colormap',flipud(plasma),'Color','k');
             h.NodeLabelColor = 'w';
             h.NodeFontWeight = 'bold'

@@ -9,13 +9,13 @@ moduleColor = sort(moduleColor);
 
 % [~, rgb] = colornames(o.colorMap,unique(o.eigenGenes.moduleColor,'sorted'));
 
-figure('Position',[1,1,1000,1000])
+figure('Position',[1,1,1000,4000])
 g = gramm('x',o.eigenGenes.Sample, 'y',o.eigenGenes.eigenGene, 'color',o.eigenGenes.moduleColor);
-g.facet_wrap(o.eigenGenes.moduleColor,'ncols',4);
-g.geom_bar;
+g.facet_wrap(o.eigenGenes.moduleColor,'ncols',6,'scale','free_y');
+g.geom_point;
 g.set_layout_options('redraw',0,'margin_height',[.05,.05],'margin_width',[.05,.05]);
 g.set_color_options('map',rgb);
-g.set_names('x','','y','log2(eigenTMP)');
+g.set_names('x','','y','log2(eG)');
 g.no_legend;
 g.set_order_options('x',1);
 g.set_text_options('base_size',6)

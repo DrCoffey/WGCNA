@@ -18,7 +18,7 @@ g.stat_violin('normalization','width','dodge',1,'fill','transparent','width',len
 g.geom_jitter('width',.1,'dodge',1);
 g.stat_summary('geom',{'black_errorbar'},'type','sem','dodge',1);
 g.axe_property('LineWidth',1.5,'FontSize',12);
-g.axe_property('YLim',[-8 8],'tickdir','out');
+%g.axe_property('YLim',[-12 12],'tickdir','out');
 g.set_names('column',[],'x',[],'y', p.Results.title);
 g.set_text_options('base_size',14,'interpreter','none');
 
@@ -30,8 +30,8 @@ moduleColor = sort(moduleColor);
 
 g.set_color_options('map',rgb);
 
-g.geom_hline('yintercept',2.5,'style','r');
-g.geom_hline('yintercept',-2.5,'style','r');
+g.geom_hline('yintercept',2,'style','--r');
+g.geom_hline('yintercept',-2,'style','--r');
 
 g.set_point_options('base_size',2);
 g.no_legend();
