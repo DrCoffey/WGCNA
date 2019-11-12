@@ -9,7 +9,9 @@ classdef WGCNA < handle
         deseqTable
         deseqFileName % Name of the deseq2 file
         eigenGenes
-        colorMap
+        colorMap = 'Crayola';
+        geneTablePath
+
     end
     
     methods
@@ -18,9 +20,10 @@ classdef WGCNA < handle
         
         copyGenes(o,GraphOrModuleName)
                 
-        o = loadGeneTable(o,geneTablePath)
+        o = loadGeneTable(o,geneTablePath,varargin)
         o = loadDissTOM(o,dissTOMPath,varargin)
         o = loadDESEQ(o,deseqPath)
+        o = mergeEigenGenes(o,varargin);
 
         
 
