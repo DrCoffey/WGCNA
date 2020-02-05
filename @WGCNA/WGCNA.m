@@ -94,18 +94,21 @@ classdef WGCNA < handle
             daObj.Layout='force';
             end
             
-            figure('Position',[0 0 1080 1080])
-            h = plot(g,'EdgeCData',rescale(g.Edges.Weight,0,1), 'NodeLabelMode', 'auto');
+            figure('Position',[0 0 1180 1080])
+            % h = plot(g,'EdgeCData',rescale(g.Edges.Weight,0,1), 'NodeLabelMode', 'auto');
+            h = plot(g,'EdgeCData',1-g.Edges.Weight, 'NodeLabelMode', 'auto');
             if daObj.SigNode==1;
-                h.MarkerSize = rescale(-g.Nodes.Wald_Stats,2,2)
-                h.NodeCData = g.Nodes.Wald_Stats;
+                g.Nodes.Wald_Stats(isnan(g.Nodes.Wald_Stats))=0;
+                h.MarkerSize = rescale(abs(g.Nodes.Wald_Stats),2,12)
+                h.NodeColor = [.90,.60,0];
             else
                 h.MarkerSize = 5;
+                h.NodeColor = [.90,.60,0];;
             end
             h.LineWidth = daObj.LineWidth;
             h.EdgeAlpha = daObj.EdgeAlpha;
             h.NodeFontSize = daObj.NodeFontSize;
-            h.NodeColor ='w';
+            
             try
             if sum(daObj.Layout=='circle')==6;
             layout(h,'circle');
@@ -113,11 +116,29 @@ classdef WGCNA < handle
             catch
             layout(h,daObj.Layout,'WeightEffect','direct','UseGravity','on');
             end
-            set(gcf,'Colormap',flipud(plasma),'Color','k');
+            
+            try
+            if sum(daObj.Layout=='force')==5;
+            center=centrality(g,'degree');
+            g.Nodes.Connections=center;
+            [B I] = maxk(g.Nodes.Connections,4);
+            tmp=repmat({''},1,length(h.NodeLabel));
+            tmp(I)=h.NodeLabel(I);
+            h.NodeLabel=tmp;
+            layout(h,daObj.Layout,'WeightEffect','direct','UseGravity','on');
+            end
+            catch
+            end
+            
+            set(gcf,'Colormap',(plasma),'Color','k');
             h.NodeLabelColor = 'w';
             h.NodeFontWeight = 'bold'
             box off
             axis off
+            c=colorbar('Color','w');
+%             c.Limits = [min(h.EdgeCData) max(h.EdgeCData)]
+            c.Label.String="Similarty";
+            
 %             set(gca,'position',[0,0,1,1])
         end
     end

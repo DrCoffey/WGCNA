@@ -26,7 +26,7 @@ for module = modules'
         case 'unweighted'
             TPM = o.geneTable{o.geneTable.moduleColor == module, numericVars};
 %                 TPM(TPM == -Inf) = NaN
-            [~,score] = pca(TPM','NumComponents',1);
+            [~,score] = pca(log2(TPM'+1),'NumComponents',1);
     end
     if isempty(score)
         score = zeros(length(sampleNames),1);
