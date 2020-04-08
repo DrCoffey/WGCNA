@@ -134,7 +134,22 @@ classdef WGCNA < handle
             tmp=repmat({''},1,length(h.NodeLabel));
             tmp(I)=h.NodeLabel(I);
             h.NodeLabel=tmp;
-            layout(h,daObj.Layout,'WeightEffect','direct','UseGravity','on');
+            %layout(h,daObj.Layout,'WeightEffect','direct','UseGravity','on');
+            layout(h,'force','WeightEffect','inverse','UseGravity','on');
+            %layout(h,'subspace3','Dimension',100);
+            end
+            catch
+            end
+            
+            try
+            if sum(daObj.Layout=='subspace')==8;
+            center=centrality(g,'degree');
+            g.Nodes.Connections=center;
+            [B I] = maxk(g.Nodes.Connections,5);
+            tmp=repmat({''},1,length(h.NodeLabel));
+            tmp(I)=h.NodeLabel(I);
+            h.NodeLabel=tmp;
+            layout(h,'subspace3','Dimension',150);
             end
             catch
             end
