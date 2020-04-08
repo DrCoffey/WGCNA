@@ -94,6 +94,16 @@ classdef WGCNA < handle
             daObj.Layout='force';
             end
             
+            
+            
+            try
+            if sum(daObj.Layout=='tree')==4;
+            g = minspantree(g);
+            g = w.removeDisconnectedNodes(g);
+            end
+            catch
+            end
+            
             figure('Position',[0 0 1180 1080])
             % h = plot(g,'EdgeCData',rescale(g.Edges.Weight,0,1), 'NodeLabelMode', 'auto');
             h = plot(g,'EdgeCData',1-g.Edges.Weight, 'NodeLabelMode', 'auto');
@@ -114,18 +124,43 @@ classdef WGCNA < handle
             layout(h,'circle');
             end
             catch
-            layout(h,daObj.Layout,'WeightEffect','direct','UseGravity','on');
             end
             
             try
             if sum(daObj.Layout=='force')==5;
             center=centrality(g,'degree');
             g.Nodes.Connections=center;
-            [B I] = maxk(g.Nodes.Connections,4);
+            [B I] = maxk(g.Nodes.Connections,5);
             tmp=repmat({''},1,length(h.NodeLabel));
             tmp(I)=h.NodeLabel(I);
             h.NodeLabel=tmp;
             layout(h,daObj.Layout,'WeightEffect','direct','UseGravity','on');
+            end
+            catch
+            end
+            
+            try
+            if sum(daObj.Layout=='subspace')==8;
+            center=centrality(g,'degree');
+            g.Nodes.Connections=center;
+            [B I] = maxk(g.Nodes.Connections,5);
+            tmp=repmat({''},1,length(h.NodeLabel));
+            tmp(I)=h.NodeLabel(I);
+            h.NodeLabel=tmp;
+            layout(h,'subspace3','Dimension',150);
+            end
+            catch
+            end
+            
+            try
+            if sum(daObj.Layout=='tree')==4;
+            layout(h,'force','Iterations',30,'WeightEffect','inverse','UseGravity','on');
+            center=centrality(g,'degree');
+            g.Nodes.Connections=center;
+            [B I] = maxk(g.Nodes.Connections,5);
+            tmp=repmat({''},1,length(h.NodeLabel));
+            tmp(I)=h.NodeLabel(I);
+            h.NodeLabel=tmp;
             end
             catch
             end

@@ -30,8 +30,8 @@ moduleColor = sort(moduleColor);
 
 g.set_color_options('map',rgb);
 
-g.geom_hline('yintercept',2,'style','--r');
-g.geom_hline('yintercept',-2,'style','--r');
+g.geom_hline('yintercept',1.5,'style','--r');
+g.geom_hline('yintercept',-1.5,'style','--r');
 
 g.set_point_options('base_size',2);
 g.no_legend();
