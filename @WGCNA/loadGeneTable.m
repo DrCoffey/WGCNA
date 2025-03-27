@@ -2,7 +2,7 @@ function o = loadGeneTable(o,geneTablePath,varargin)
 %% Load the output table from WGCNA with gene names and modules
 p=inputParser;
 p.addParameter('coolColors', false);
-p.parse(varargin{:})
+p.parse(varargin{:});
 
 % geneTablePath - path to the output table
 o.geneTable = readtable(fullfile(o.baseDir,geneTablePath));
@@ -27,7 +27,7 @@ if p.Results.coolColors
         o.geneTable.mergedColors=categorical(o.geneTable.mergedColors);
         o.geneTable.mergedColors = renameColors(o.geneTable.mergedColors, o.colorMap, s);
     end
-    writetable(o.geneTable, fullfile(filepath, [filename ext]));
+    writetable(o.geneTable, fullfile(filepath, strcat(filename,ext)));
 
 else
     if ismember('moduleColor',fieldnames(o.geneTable))

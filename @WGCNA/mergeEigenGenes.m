@@ -15,7 +15,7 @@ Z = linkage(d);
 
 T = cluster(Z,'cutoff',p.Results.mergeThreshold,'Criterion','distance')
 dendrogram(Z,0,'colorThreshold',p.Results.mergeThreshold);
-export_fig('Merged Eigengene Dendrogra,.png','-m3')
+%export_fig('Merged Eigengene Dendrogra,.png','-m3')
 
  
 oldModules = unique(o.geneTable.moduleColor);

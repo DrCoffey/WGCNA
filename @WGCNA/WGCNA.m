@@ -11,6 +11,7 @@ classdef WGCNA < handle
         eigenGenes
         colorMap = 'Crayola';
         geneTablePath
+        key
 
     end
     
@@ -49,6 +50,7 @@ classdef WGCNA < handle
         function g  = removeDisconnectedNodes(g)
             % Use this function to remove disconnected genes
             g = rmnode(g, find(sum(adjacency(g,'weighted')) == 0));
+            
         end
         
         function g = pruneEdges(g, n)
@@ -172,7 +174,7 @@ classdef WGCNA < handle
             layout(h,'force','Iterations',30,'WeightEffect','inverse','UseGravity','on');
             center=centrality(g,'degree');
             g.Nodes.Connections=center;
-            [B I] = maxk(g.Nodes.Connections,5);
+            [B I] = maxk(g.Nodes.Connections,4);
             tmp=repmat({''},1,length(h.NodeLabel));
             tmp(I)=h.NodeLabel(I);
             h.NodeLabel=tmp;

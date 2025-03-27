@@ -1,51 +1,57 @@
-function colornames_cube(palette,space)
-% Plot COLORNAMES palettes in a color cube (RGB/DIN99/Lab/LCh/HSV/XYZ). With DataCursor labels.
+function colornames_cube(palette,space) %#ok<*ISMAT,*TRYNC,*TNOW1>
+% Plot COLORNAMES palettes in a color cube (e.g. RGB, OKLab). With DataCursor labels.
 %
-% (c) 2014-2019 Stephen Cobeldick
+% (c) 2014-2024 Stephen Cobeldick
 %
 %%% Syntax:
 %  colornames(palette,space)
 %
-% Plot the COLORNAMES palettes in an RGB/Lab/LCh/HSV/XYZ cube. Color names
-% can be viewed by clicking on the plotted points using the data cursor.
+% Plot COLORNAMES palettes in an RGB/DIN99/OKLab/CIELab/LCh/HSV/XYZ cube.
+% The data-cursor of the plotted points gives the color-names.
 %
 % Two vertical colorbars are displayed on the figure's right hand side,
-% showing the colormap in sequence, both in color and converted to grayscale.
+% showing the colormap in sequence (in full color and as grayscale).
 %
-% Note: Requires the function COLORNAMES and its associated MAT file (FEX 48155).
+% Dependencies: Requires the function COLORNAMES (FEX 48155).
 %
 %% Input and Output Arguments %%
 %
 %%% Inputs (all inputs are optional):
-%  palette = CharRowVector, the name of a palette supported by COLORNAMES.
-%  space   = CharRowVector, the colorspace to plot the palette in, e.g. 'RGB'.
+%  palette = StringScalar or CharRowVector, the name of a palette supported
+%            by COLORNAMES, e.g. "MATLAB", "xkcd", or 'Alphabet'.
+%  space   = StringScalar or CharRowVector, the colorspace to plot the
+%            palette in, e.g. "RGB", "HSV", or 'OKLab'.
 %
 %%% Outputs:
 % none
 %
-% See also COLORNAMES COLORNAMES_DELTAE COLORNAMES_VIEW MAXDISTCOLOR COLORMAP
+% See also COLORNAMES COLORNAMES_DELTAE COLORNAMES_SEARCH COLORNAMES_VIEW MAXDISTCOLOR
 
-%% Figure Parameters %%
+%% Input Wrangling %%
 %
 persistent fgh axh lnh axc axg imc img txt rgb pah sph
 %
-%% Get COLORNAMES Palettes %%
+isChRo = @(s)ischar(s)&&ndims(s)==2&&size(s,1)==1;
 %
-[fnm,csf] = colornames();
+% Get palette names and colorspace functions:
+[pnc,csf] = colornames();
 %
 if nargin<1
-	idp = 1+rem(round(now*1e7),numel(fnm));
+	idp = 1+rem(round(now*1e7),numel(pnc));
 else
-	assert(ischar(palette)&&isrow(palette),'First input <palette> must be a 1xN char.')
-	idz = strcmpi(palette,fnm);
-	assert(any(idz),'Palette ''%s'' is not supported. Call COLORNAMES() to list all palettes.',palette)
-	idp = find(idz);
+	palette = cnc1s2c(palette);
+	assert(isChRo(palette),...
+		'SC:colornames_cube:palette:NotText',...
+		'The first input <palette> must be a string scalar or a char row vector.')
+	idp = find(strcmpi(palette,pnc));
+	assert(isscalar(idp),...
+		'SC:colornames_cube:palette:UnknownPalette',...
+		'Palette "%s" is not supported. Call COLORNAMES() to list all palettes.',palette)
 end
-%
-%% Color Space List %%
 %
 clm = {... % axes limits
 	{[0,1],[0,1],[0,1]},... RGB
+	{[0,1],[-Inf,+Inf],[-Inf,+Inf]},... OKLab
 	{[0,100],[-Inf,+Inf],[-Inf,+Inf]},... DIN99
 	{[0,100],[-Inf,+Inf],[-Inf,+Inf]},... Lab
 	{[0,100],[0,+Inf],[0,360]},... LCh
@@ -53,23 +59,29 @@ clm = {... % axes limits
 	{[0,1],[0,1],[0,1]}}; % XYZ
 lbl = {... % axes labels
 	{'Red','Green','Blue'},... RGB
+	{'L','a','b'},... OKLab
 	{'L_{99}','a_{99}','b_{99}'},...  DIN99
 	{'L*','a*','b*'},...  Lab
 	{'Lightness','Chroma','Hue'},... LCh
 	{'Hue','Saturation','Value'},... HSV
 	{'X','Y','Z'}}; % XYZ
-z90 = [   true,  false,  false,   true,   true,  false]; % 90 degree Z label. 
-aar = [  false,  false,  false,   true,   true,  false]; % automatic axes ratio.
-csp = {  'RGB','DIN99',  'Lab',  'LCh',  'HSV',  'XYZ'}; % colorspace.
-xyz = {[3,2,1],[3,2,1],[3,2,1],[3,2,1],[1,2,3],[1,2,3]}; % axis order.
+z90 = [   true,   false,   false,  false,   true,   true,  false]; % 90 degree Z label.
+aar = [  false,   false,   false,  false,   true,   true,  false]; % automatic axes ratio.
+csp = {  'RGB', 'OKLab', 'DIN99',  'Lab',  'LCh',  'HSV',  'XYZ'}; % colorspace.
+xyz = {[3,2,1], [3,2,1], [3,2,1],[3,2,1],[3,2,1],[1,2,3],[1,2,3]}; % axis order.
 %
 if nargin<2
 	ids = 1+rem(round(now*1e7),numel(csp));
 else
-	assert(ischar(space)&&isrow(space),'Second input <sort> must be a 1xN char.')
-	tmp = strcmpi(space,csp);
-	assert(any(tmp),'Second input must be one of:%s\b.',sprintf(' %s,',csp{:}))
-	ids = find(tmp);
+	space = cnc1s2c(space);
+	assert(isChRo(space),...
+		'SC:colornames_cube:space:NotText',...
+		'The second input <space> must be a scalar string or a char row vector.')
+	ids = strcmpi(space,csp);
+	assert(any(ids),...
+		'SC:colornames_cube:space:UnknownOption',...
+		'The second input must be one of:%s\b.',sprintf(' %s,',csp{:}))
+	ids = find(ids);
 end
 %
 %% Create a New Figure %%
@@ -79,6 +91,7 @@ if isempty(fgh) || ~ishghandle(fgh)
 	fgh = figure('HandleVisibility','callback', 'IntegerHandle','off',...
 		'NumberTitle','off', 'Name',mfilename, 'Color','white', 'Toolbar','figure');
 	axh = axes('Parent',fgh, 'NextPlot','replacechildren', 'View',[55,32]);
+	%	'Clipping','off', 'ClippingStyle','rectangle');
 	grid(axh,'on')
 	% Create colorbars:
 	axc = axes('Parent',fgh, 'Units','normalized', 'Position',[0.96,0,0.02,1],...
@@ -89,10 +102,10 @@ if isempty(fgh) || ~ishghandle(fgh)
 	img = image('CData',[0.75;0.5;0.25], 'Parent',axg);
 	txt = uicontrol(fgh, 'Units','Pixels', 'Position',[0,0,30,15], 'Style','text');
 	uicontrol(fgh, 'Units','Normalized', 'Position',[0.88,0.96,0.08,0.04],...
-		 'Style','togglebutton', 'Callback',@cncDemoClBk, 'String','Demo');
-	% Create space and palette menus:
+		'Style','togglebutton', 'Callback',@cncDemoClBk, 'String','Demo');
+	% Create colorspace and palette menus:
 	pah = uicontrol(fgh, 'Units','normalized', 'Position',[0,0.95,0.15,0.05],...
-		'Style','popupmenu', 'Callback',@cncScmClBk, 'String',fnm);
+		'Style','popupmenu', 'Callback',@cncScmClBk, 'String',pnc);
 	sph = uicontrol(fgh, 'Units','normalized', 'Position',[0,0.90,0.10,0.05],...
 		'Style','popupmenu', 'Callback',@cncSpcClBk, 'String',csp);
 	% Add DataCursor labels:
@@ -111,7 +124,7 @@ set(sph,'Value',ids);
 		cncClrSpace()
 	end
 %
-	function cncSpcClBk(h,~) % Color Space Callback
+	function cncSpcClBk(h,~) % Colorspace Callback
 		ids = get(h,'Value');
 		cncClrSpace()
 	end
@@ -120,13 +133,17 @@ set(sph,'Value',ids);
 %
 	function cncMapPlot()
 		% Delete any existing colors:
-		delete(lnh(ishghandle(lnh)))
+		try
+			cla(axh)
+		end
+		drawnow
 		% Get new colors:
-		[cnc,rgb] = colornames(fnm{idp});
+		[cnc,rgb] = colornames(pnc{idp});
 		N = numel(cnc);
 		mag = rgb*[0.298936;0.587043;0.114021];
 		% Update main axes:
 		set(axh, 'ColorOrder',rgb, 'NextPlot','replacechildren');
+		%set(axh, 'ClippingStyle','rectangle', 'Clipping','off')
 		% Update colorbars:
 		set(axc, 'YLim',[0,N]+0.5)
 		set(axg, 'YLim',[0,N]+0.5)
@@ -145,20 +162,22 @@ set(sph,'Value',ids);
 	end
 %
 	function cncClrSpace()
-		% Plot the data in the requested color space.
+		% Plot the data in the requested colorspace.
 		switch csp{ids}
 			case 'RGB'
 				map = rgb;
 			case 'HSV'
-				map = csf.rgb2hsv(rgb);
+				map = csf.cnRGB2HSV(rgb);
 			case 'XYZ'
-				map = csf.rgb2xyz(rgb);
+				map = csf.cnRGB2XYZ(rgb);
 			case 'Lab'
-				map = csf.xyz2lab(csf.rgb2xyz(rgb));
+				map = csf.cnXYZ2Lab(csf.cnRGB2XYZ(rgb));
 			case 'LCh'
-				map = csf.lab2lch(csf.xyz2lab(csf.rgb2xyz(rgb)));
+				map = csf.cnLab2LCh(csf.cnXYZ2Lab(csf.cnRGB2XYZ(rgb)));
+			case 'OKLab'
+				map = csf.cnXYZ2OKLab(csf.cnRGB2XYZ(rgb));
 			case 'DIN99'
-				map = csf.lab2d99(csf.xyz2lab(csf.rgb2xyz(rgb)));
+				map = csf.cnLab2DIN99(csf.cnXYZ2Lab(csf.cnRGB2XYZ(rgb)));
 			otherwise
 				error('Sorry, the colorspace "%s" is not recognized.',csp{ids})
 		end
@@ -202,6 +221,7 @@ set(sph,'Value',ids);
 			itr = itr-1;
 			% Wait a smidgen:
 			pause(0.07)
+			drawnow()
 		end
 	end
 %
@@ -252,3 +272,10 @@ set(axh,'CameraPosition',pos, 'CameraUpVector',upv)
 %
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%cncOrbit
+function arr = cnc1s2c(arr)
+% If scalar string then extract the character vector, otherwise data is unchanged.
+if isa(arr,'string') && isscalar(arr)
+	arr = arr{1};
+end
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%cnc1s2c

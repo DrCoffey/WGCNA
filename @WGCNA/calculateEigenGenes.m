@@ -31,7 +31,15 @@ for module = modules'
     if isempty(score)
         score = zeros(length(sampleNames),1);
     end
+    if isempty(o.key)
     o.eigenGenes = [o.eigenGenes;
         table(repmat(module,length(sampleNames),1),sampleNames,zscore(score),'VariableNames',{'moduleColor','Sample','eigenGene'})
         ];
+    else
+    o.eigenGenes = [o.eigenGenes;
+        table(repmat(module,length(sampleNames),1),'VariableNames',{'moduleColor'}),...
+        table(sampleNames,'VariableNames',{'Sample'}),...
+        table(zscore(score),'VariableNames',{'eigenGene'}),...
+        o.key];
+    end
 end
