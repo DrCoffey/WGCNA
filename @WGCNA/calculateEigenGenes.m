@@ -1,5 +1,6 @@
 function o = calculateEigenGenes(o)
 calcType = 'unweighted';
+%calcType = 'weighted';
 o.eigenGenes = [];
 
 % Get the columns that contain the TPMs
@@ -18,15 +19,17 @@ for module = modules'
             % Do weighted PCA
             if height(g.Nodes) < 2000
                 weights = centrality(g,'closeness','Cost',g.Edges.Weight);
-                [~,score] = pca(log2(TPM'+1),'NumComponents',1,'VariableWeights',weights);
+                %[~,score] = pca(log2(TPM'+1),'NumComponents',1,'VariableWeights',weights);
+                [~,score] = pca(TPM','NumComponents',1,'VariableWeights',weights);
             else
-                [~,score] = pca(log2(TPM'+1),'NumComponents',1);
+                %[~,score] = pca(log2(TPM'+1),'NumComponents',1);
+                [~,score] = pca(TPM','NumComponents',1);
             end
             
         case 'unweighted'
             TPM = o.geneTable{o.geneTable.moduleColor == module, numericVars};
-%                 TPM(TPM == -Inf) = NaN
-            [~,score] = pca(log2(TPM'+1),'NumComponents',1);
+                [~,score] = pca(TPM','NumComponents',1);
+                %[~,score] = pca(log2(TPM'+1),'NumComponents',1);
     end
     if isempty(score)
         score = zeros(length(sampleNames),1);

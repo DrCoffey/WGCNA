@@ -100,18 +100,18 @@ classdef WGCNA < handle
             
             try
             if sum(daObj.Layout=='tree')==4;
-            g = minspantree(g);
-            g = w.removeDisconnectedNodes(g);
+            g = minspantree(g,"Type","forest");
+            %g = w.removeDisconnectedNodes(g);
             end
             catch
             end
             
-            figure('Position',[0 0 1180 1080])
+            figure('Position',[0 0 600 500])
             % h = plot(g,'EdgeCData',rescale(g.Edges.Weight,0,1), 'NodeLabelMode', 'auto');
             h = plot(g,'EdgeCData',1-g.Edges.Weight, 'NodeLabelMode', 'auto');
             if daObj.SigNode==1;
                 g.Nodes.Wald_Stats(isnan(g.Nodes.Wald_Stats))=0;
-                h.MarkerSize = rescale(abs(g.Nodes.Wald_Stats),2,12)
+                h.MarkerSize = rescale(abs(g.Nodes.Wald_Stats),2,10)
                 h.NodeColor = [.90,.60,0];
             else
                 h.MarkerSize = 5;
@@ -171,10 +171,10 @@ classdef WGCNA < handle
             
             try
             if sum(daObj.Layout=='tree')==4;
-            layout(h,'force','Iterations',30,'WeightEffect','inverse','UseGravity','on');
+            layout(h,'force','Iterations',60,'WeightEffect','inverse','UseGravity','on');
             center=centrality(g,'degree');
             g.Nodes.Connections=center;
-            [B I] = maxk(g.Nodes.Connections,4);
+            [B I] = maxk(g.Nodes.Connections,5);
             tmp=repmat({''},1,length(h.NodeLabel));
             tmp(I)=h.NodeLabel(I);
             h.NodeLabel=tmp;
